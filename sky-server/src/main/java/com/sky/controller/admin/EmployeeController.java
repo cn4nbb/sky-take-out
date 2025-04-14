@@ -96,7 +96,7 @@ public class EmployeeController {
      * @return
      */
     @GetMapping("/page")
-    public Result pageQuery(EmployeePageQueryDTO pageQueryDTO){
+    public Result<PageResult> pageQuery(EmployeePageQueryDTO pageQueryDTO){
         log.info("员工分页查询,参数为：{}",pageQueryDTO);
 
         PageResult pageResult= employeeService.pageQuery(pageQueryDTO);
@@ -104,4 +104,18 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public Result enableOrDisable(@PathVariable("status") Integer status,Long id){
+        log.info("启用禁用员工账号，id：{}，状态：{}",id,status);
+
+        employeeService.enableOrDisable(status,id);
+
+        return Result.success();
+    }
 }
