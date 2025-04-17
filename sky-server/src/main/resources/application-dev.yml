@@ -6,3 +6,8 @@ sky:
     database: sky_take_out
     username: root
     password: 20020822
+
+  alioss:
+    bucket-name: web-cnan-sky
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    region: cn-beijing
