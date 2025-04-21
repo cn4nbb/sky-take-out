@@ -20,4 +20,10 @@
         </where>
         order by update_time desc
     </select>
+    
+    <select id="getById" resultType="com.sky.vo.DishVO">
+        select d.*,c.name category_name
+        from dish d left join category c on d.category_id = c.id
+        where d.id = #{id}
+    </select>
 </mapper>
