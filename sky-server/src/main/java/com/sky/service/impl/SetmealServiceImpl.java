@@ -2,14 +2,20 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.DeletionNotAllowedException;
+import com.sky.exception.SetmealEnableFailedException;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishVO;
 import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +31,8 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealMapper setmealMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private DishMapper dishMapper;
     /**
      * 套餐分页查询
      * @param setmealPageQueryDTO
@@ -111,7 +119,40 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     public void enableOrDisable(Integer status, Long id) {
+        //如果要执行起售操作
+        if (status == StatusConstant.ENABLE){
+            //获取该套餐的套餐菜品关系列表
+            List<SetmealDish> setmealDishes = setmealDishMapper.getListBySetmealId(id);
+            //遍历列表 通过菜品id查询每个菜品的状态
+            setmealDishes.forEach(sd ->{
+                DishVO dish = dishMapper.getById(sd.getDishId());
+                //如果套餐内有未起售的菜品 则抛出异常 不允许起售
+                if (dish.getStatus() == StatusConstant.DISABLE){
+                    throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+                }
+            });
+        }
+
         setmealMapper.update(Setmeal.builder().id(id).status(status).build());
+    }
+
+    @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+        //查询有无起售的套餐 有则抛出异常 不能删除
+        ids.forEach(id ->{
+            SetmealVO setmealVO = setmealMapper.getById(id);
+            if (setmealVO.getStatus() == StatusConstant.ENABLE){
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+            }
+        });
+
+        //删除setmeal表中数据
+        setmealMapper.deleteBatch(ids);
+        //删除setmeal_dish中对应的套餐菜品关系
+        ids.forEach(id ->{
+            setmealDishMapper.deleteBySetmealId(id);
+        });
     }
 
 }

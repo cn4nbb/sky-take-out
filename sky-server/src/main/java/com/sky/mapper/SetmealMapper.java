@@ -50,4 +50,10 @@ public interface SetmealMapper {
      * @return
      */
     SetmealVO getById(Long id);
+
+    /**
+     * 根据id批量删除
+     * @param ids
+     */
+    void deleteBatch(List<Long> ids);
 }
