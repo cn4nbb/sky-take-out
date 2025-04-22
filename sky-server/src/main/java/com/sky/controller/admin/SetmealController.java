@@ -5,6 +5,7 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,4 +45,46 @@ public class SetmealController {
         return Result.success();
     }
 
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    public Result update(@RequestBody SetmealDTO setmealDTO){
+        log.info("修改套餐，参数为：{}",setmealDTO);
+
+        setmealService.update(setmealDTO);
+
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<SetmealVO> getById(@PathVariable Long id){
+        log.info("根据id查询套餐，参数为：{}",id);
+
+        SetmealVO setmealVO = setmealService.getById(id);
+
+        return Result.success(setmealVO);
+    }
+
+    /**
+     * 套餐起售停售
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public Result enableOrDisable(@PathVariable Integer status,Long id){
+        log.info("套餐起售停售，参数为：{},{}",status,id);
+
+        setmealService.enableOrDisable(status,id);
+
+        return Result.success();
+    }
 }

@@ -36,4 +36,18 @@ public interface SetmealMapper {
      */
     @AutoFill(OperationType.INSERT)
     void save(Setmeal setmeal);
+
+    /**
+     * 动态更新套餐
+     * @param setmeal
+     */
+    @AutoFill(OperationType.UPDATE)
+    void update(Setmeal setmeal);
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    SetmealVO getById(Long id);
 }

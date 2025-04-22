@@ -50,7 +50,7 @@ public class SetmealServiceImpl implements SetmealService {
         Setmeal setmeal = new Setmeal();
         //属性拷贝
         BeanUtils.copyProperties(setmealDTO,setmeal);
-        //获取菜品列表
+        //获取套餐菜品关系列表
         List<SetmealDish> setmealDishList = setmealDTO.getSetmealDishes();
 
         //向setmeal表插入数据
@@ -62,4 +62,56 @@ public class SetmealServiceImpl implements SetmealService {
         //向setmeal_dish表插入多条数据
         setmealDishMapper.insertBatch(setmealDishList);
     }
+
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     */
+    @Override
+    @Transactional
+    public void update(SetmealDTO setmealDTO) {
+        Setmeal setmeal = new Setmeal();
+        //属性拷贝
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        //获取套餐菜品关系列表
+        List<SetmealDish> setmealDishList = setmealDTO.getSetmealDishes();
+
+        //更新setmeal表
+        setmealMapper.update(setmeal);
+
+        //删除原有setmeal_dish对应数据
+        setmealDishMapper.deleteBySetmealId(setmealDTO.getId());
+        setmealDishList.forEach(sd->{
+            sd.setSetmealId(setmealDTO.getId());
+        });
+        //向setmeal_dish表插入数据
+        setmealDishMapper.insertBatch(setmealDishList);
+    }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    @Override
+    @Transactional
+    public SetmealVO getById(Long id) {
+        //获取setmeal及category对应数据
+        SetmealVO setmealVO = setmealMapper.getById(id);
+        //获取setmeal和dish的关系
+        List<SetmealDish>  setmealDishList = setmealDishMapper.getListBySetmealId(id);
+        setmealVO.setSetmealDishes(setmealDishList);
+        return setmealVO;
+    }
+
+    /**
+     * 套餐起售停售
+     * @param status
+     * @param id
+     */
+    @Override
+    public void enableOrDisable(Integer status, Long id) {
+        setmealMapper.update(Setmeal.builder().id(id).status(status).build());
+    }
+
 }
