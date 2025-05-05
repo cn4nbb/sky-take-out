@@ -35,7 +35,6 @@ public interface CategoryMapper {
     @AutoFill(OperationType.INSERT)
     void insert(Category category);
 
-    @Select("select * from category where type = #{type}")
     List<Category> typeQuery(Integer type);
 
     @Delete("delete from category where id = #{id}")

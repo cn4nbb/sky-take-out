@@ -60,9 +60,8 @@ public interface DishMapper {
 
     /**
      * 根据分类id查询菜品
-     * @param categoryId
+     * @param dish
      * @return
      */
-    @Select("select * from dish where category_id = #{categoryId}")
-    List<Dish> getListByCategoryId(Long categoryId);
+    List<Dish> getListByCategoryId(Dish dish);
 }
