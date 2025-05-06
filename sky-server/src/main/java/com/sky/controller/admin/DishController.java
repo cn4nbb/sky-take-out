@@ -38,7 +38,7 @@ public class DishController {
         dishService.save(dishDTO);
 
         //清理对应分类下的缓存数据
-        cleanCache("category_"+dishDTO.getCategoryId());
+        cleanCache("dish_"+dishDTO.getCategoryId());
 
         return Result.success();
     }
@@ -67,7 +67,7 @@ public class DishController {
         dishService.deleteBatch(ids);
 
         //清理所有缓存数据
-        cleanCache("category_*");
+        cleanCache("dish_*");
 
         return Result.success();
     }
@@ -97,7 +97,7 @@ public class DishController {
         dishService.update(dishDTO);
 
         //清理所有缓存数据
-        cleanCache("category_*");
+        cleanCache("dish_*");
 
         return Result.success();
     }
@@ -129,7 +129,7 @@ public class DishController {
         dishService.enableOrDisable(status,id);
 
         //清理所有缓存数据
-        cleanCache("category_*");
+        cleanCache("dish_*");
 
         return Result.success();
     }
